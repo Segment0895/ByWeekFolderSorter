@@ -10,11 +10,17 @@ namespace Limpador
     {
         static void Main(string[] args)
         {
-            var a = new Limpador(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads");
-            a.OrganizeFiles();
+            //new Testes();
+            //return;
 
-            var b = new Limpador(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Desktop");
-            b.OrganizeFiles();
+            if (args.Count() == 0) {
+                var CONFS = Configuracoes.GetConfs().DIRS;
+                foreach (string str in CONFS)
+                {
+                    var obj = new Limpador(str);
+                    obj.OrganizeFiles();
+                }
+            }
 
             Console.WriteLine("Press any key to continue . . . ");
             Console.ReadKey();
