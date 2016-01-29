@@ -12,7 +12,8 @@ namespace Limpador
     public class Dados
     {
         static public string USERDIR = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        public string[] DIRS = { USERDIR + @"\Downloads", USERDIR + @"\Desktop", USERDIR + @"\Insync" };
+        public string[] DIRS = { @"C:\pedro\Dropbox\Downloads", @"C:\pedro\Dropbox\Desktop" };
+        public string[] IGNORAR = { @"desktop.ini", @"TRALHA"};
     }
 
     public class Configuracoes

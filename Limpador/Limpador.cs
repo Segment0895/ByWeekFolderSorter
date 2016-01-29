@@ -84,7 +84,15 @@ namespace Limpador
 
             foreach (FileSystemInfo fi in ficheiros)
             {
-                if (String.Compare(fi.Name, "TRALHA", true) == 0)
+                Boolean CONTINUAR = false;
+                var CONFS = Configuracoes.GetConfs().IGNORAR;
+                foreach (string str in CONFS)
+                {
+                    if (String.Compare(fi.Name, str, true) == 0)
+                        CONTINUAR = true;
+                }
+
+                if (CONTINUAR == true)
                     continue;
 
                 if (String.Compare(fi.Name, "desktop.ini", true) == 0)
