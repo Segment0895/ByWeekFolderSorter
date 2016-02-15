@@ -13,7 +13,8 @@ namespace Limpador
     {
         static public string USERDIR = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public string[] DIRS = { @"C:\pedro\Dropbox\Downloads", @"C:\pedro\Dropbox\Desktop" };
-        public string[] IGNORAR = { @"desktop.ini", @"TRALHA"};
+        public string[] IGNORAR1FILES = { @"desktop.ini"};
+        public string[] IGNORAR2REGEX = { @"^([0-9]{4})-week(5[0-3]|[1-4][0-9]|0[1-9])$" };
     }
 
     public class Configuracoes

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Limpador
@@ -26,7 +27,7 @@ namespace Limpador
                 Console.Error.WriteLine(dir.ToString() + " não foi encontrada.");
                 throw ex;
             }
-            alvo = di.ToString() + @"\TRALHA";
+            alvo = di.ToString() + @""; // antigamente era em TRALHA, agora já não para me obrigar a arrumar
         }
 
 
@@ -85,11 +86,27 @@ namespace Limpador
             foreach (FileSystemInfo fi in ficheiros)
             {
                 Boolean CONTINUAR = false;
-                var CONFS = Configuracoes.GetConfs().IGNORAR;
-                foreach (string str in CONFS)
+                var CONFS1 = Configuracoes.GetConfs().IGNORAR1FILES;
+                foreach (string str in CONFS1)
                 {
                     if (String.Compare(fi.Name, str, true) == 0)
+                    {
                         CONTINUAR = true;
+                        break;
+                    }
+                }
+
+                if (CONTINUAR == true)
+                    continue;
+                
+                var CONFS2 = Configuracoes.GetConfs().IGNORAR2REGEX;
+                foreach (string str in CONFS2)
+                {
+                    if (Regex.Match(fi.Name, str).Success == true)
+                    {
+                        CONTINUAR = true;
+                        break;
+                    }
                 }
 
                 if (CONTINUAR == true)
