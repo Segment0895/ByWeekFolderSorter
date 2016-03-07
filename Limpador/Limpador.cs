@@ -86,7 +86,7 @@ namespace Limpador
             foreach (FileSystemInfo fi in ficheiros)
             {
                 Boolean CONTINUAR = false;
-                var CONFS1 = Configuracoes.GetConfs().IGNORAR1FILES;
+                var CONFS1 = ConfiguracoesGlobais.GetConfs().IGNORAR1FILES;
                 foreach (string str in CONFS1)
                 {
                     if (String.Compare(fi.Name, str, true) == 0)
@@ -99,7 +99,7 @@ namespace Limpador
                 if (CONTINUAR == true)
                     continue;
                 
-                var CONFS2 = Configuracoes.GetConfs().IGNORAR2REGEX;
+                var CONFS2 = ConfiguracoesGlobais.GetConfs().IGNORAR2REGEX;
                 foreach (string str in CONFS2)
                 {
                     if (Regex.Match(fi.Name, str).Success == true)
