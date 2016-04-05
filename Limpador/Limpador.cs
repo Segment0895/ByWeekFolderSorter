@@ -37,18 +37,17 @@ namespace Limpador
 
             foreach (FileSystemInfo fi in di.EnumerateFileSystemInfos())
             {
-                DateTime antigo = ObterUltimoAcessoOuMod(fi);
+                DateTime antigo;
+                ObterUltimoAcessoOuMod(fi, out antigo);
 
                 TimeSpan ts = DateTime.Now - antigo;
                 if (ts.TotalHours > 72)
                 {
-                    Console.Write("YES: ");
-                    Console.WriteLine(fi.Name + " " + antigo + " to " + WeeksInYear(antigo));
                     retorno.Add(fi);
                 }
                 else
                 {
-                    Console.Write("NO: ");
+                    Console.Write("IGNORED (LRU): ");
                     Console.WriteLine(fi.Name + " " + antigo + " to " + WeeksInYear(antigo));
                 }
             }
@@ -80,94 +79,115 @@ namespace Limpador
         {
             //Console.Out.WriteLine("ok");
             List<FileSystemInfo> ficheiros = GetFileList();
+            
 
             DirectoryInfo di2 = new DirectoryInfo(alvo);
 
             foreach (FileSystemInfo fi in ficheiros)
             {
-                Boolean CONTINUAR = false;
+                bool aIgnorar = false;
+
                 var CONFS1 = ConfiguracoesGlobais.GetConfs().IGNORAR1FILES;
                 foreach (string str in CONFS1)
                 {
                     if (String.Compare(fi.Name, str, true) == 0)
                     {
-                        CONTINUAR = true;
-                        break;
+                        aIgnorar = true;
+                        goto end;
                     }
                 }
 
-                if (CONTINUAR == true)
-                    continue;
-                
+
                 var CONFS2 = ConfiguracoesGlobais.GetConfs().IGNORAR2REGEX;
                 foreach (string str in CONFS2)
                 {
                     if (Regex.Match(fi.Name, str).Success == true)
                     {
-                        CONTINUAR = true;
-                        break;
+                        aIgnorar = true;
+                        goto end;
                     }
                 }
-
-                if (CONTINUAR == true)
-                    continue;
 
                 if (String.Compare(fi.Name, "desktop.ini", true) == 0)
-                    continue;
+                {
+                    aIgnorar = true;
+                    goto end;
+                }
 
                 if (fi.Name.StartsWith(".") == true)
-                    continue;
+                {
+                    aIgnorar = true;
+                    goto end;
+                }
+            end:
+                
+                DateTime lastTouchDate;
+                ObterUltimoAcessoOuMod(fi, out lastTouchDate);
+                var weeksInYear = WeeksInYear(lastTouchDate);
 
-
-                int week = WeeksInYear(ObterUltimoAcessoOuMod(fi));
-
-                DirectoryInfo destino2 = di2.CreateSubdirectory(DateTime.Now.Year + "-week" + week);
+                DirectoryInfo destino2 = di2.CreateSubdirectory(lastTouchDate.Year + "-week" + weeksInYear);
                 //Console.Out.WriteLine(fi.Name + "->" + destino2.Name);
 
-                if (fi is FileInfo)
-                {
-                    var destinoEmTralha = new FileInfo(destino2.ToString() + Path.DirectorySeparatorChar + fi.Name);
-                    if (destinoEmTralha.Exists)
-                    {
-                        FileInfo Original = (FileInfo)fi;
-                        var existente = GetChecksumBuffered(new FileStream(destinoEmTralha.ToString(), FileMode.Open));
-                        var candidato = GetChecksumBuffered(new FileStream(destino2.ToString() + Path.DirectorySeparatorChar + Original.ToString(), FileMode.Open));
 
-                        Console.WriteLine("IGNORADO DUP: " + fi.Name);
-                    }
-                    else
-                    {
-                        ((FileInfo)fi).MoveTo(destinoEmTralha.ToString());
-                    }
-                }
-                else if (fi is DirectoryInfo)
-                {
-                    try
-                    {
-                        ((DirectoryInfo)fi).MoveTo(destino2.ToString() + Path.DirectorySeparatorChar + fi.Name);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("IGNORADO EXCEPCAO: " + fi.Name);
-                    }
+                if (aIgnorar) {
+                    Console.WriteLine("IGNORADO (rule matched): " + fi.Name);
                 }
                 else
                 {
 
-                    throw new Exception();
+                    if (fi is FileInfo)
+                    {
+                        var destinoEmTralha = new FileInfo(destino2.ToString() + Path.DirectorySeparatorChar + fi.Name);
+                        if (destinoEmTralha.Exists)
+                        {
+                            FileInfo Original = (FileInfo)fi;
+                            var existente = GetChecksumBuffered(new FileStream(destinoEmTralha.ToString(), FileMode.Open));
+                            var candidato = GetChecksumBuffered(new FileStream(destino2.ToString() + Path.DirectorySeparatorChar + Original.ToString(), FileMode.Open));
+
+                            Console.WriteLine("IGNORADO DUP: " + fi.Name);
+                        }
+                        else
+                        {
+                            Console.Write("MOVIDO: ");
+                            Console.WriteLine(fi.Name);
+                            ((FileInfo)fi).MoveTo(destinoEmTralha.ToString());
+                        }
+                    }
+                    else if (fi is DirectoryInfo)
+                    {
+                        try
+                        {
+                            Console.Write("MOVIDO: ");
+                            Console.WriteLine(fi.Name);
+
+                            ((DirectoryInfo)fi).MoveTo(destino2.ToString() + Path.DirectorySeparatorChar + fi.Name);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("IGNORADO EXCEPCAO: " + fi.Name);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
                 }
             }
         }
 
-        private DateTime ObterUltimoAcessoOuMod(FileSystemInfo fi)
+        private void ObterUltimoAcessoOuMod(FileSystemInfo fi, out DateTime Datae)
         {
-            TimeSpan ts1 = fi.LastWriteTime - fi.LastAccessTime;
+            TimeSpan ts1 = fi.LastWriteTime - fi.LastAccessTime; // > 0 => LastWriteTime > LastAccessTime
+            Datae = DateTime.Now;
+
             if (Math.Abs(ts1.TotalHours) > 1)
             {
-                return fi.LastWriteTime;
+                Datae = fi.LastWriteTime;
             }
-
-            return fi.LastAccessTime;
+            else
+            {
+                Datae = fi.LastAccessTime;
+            }
 
         }
 

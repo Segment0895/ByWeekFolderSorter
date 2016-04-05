@@ -42,7 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuracoes.cs" />
+    <Compile Include="ConfsGlobais.cs" />
+    <Compile Include="ConfsLocais.cs" />
     <Compile Include="Limpador.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
