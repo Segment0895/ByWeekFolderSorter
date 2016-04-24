@@ -148,9 +148,17 @@ namespace Limpador
                         }
                         else
                         {
-                            Console.Write("MOVIDO: ");
-                            Console.WriteLine(fi.Name);
-                            ((FileInfo)fi).MoveTo(destinoEmTralha.ToString());
+                            try
+                            {
+                                ((FileInfo)fi).MoveTo(destinoEmTralha.ToString());
+                                Console.Write("MOVIDO: ");
+                                Console.WriteLine(fi.Name);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Write("FALHOU A MOVER (excepção): ");
+                                Console.WriteLine(fi.Name);
+                            }
                         }
                     }
                     else if (fi is DirectoryInfo)
