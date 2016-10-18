@@ -12,6 +12,7 @@ namespace Limpador
     public class DadosGlobais
     {
         static public string USERDIR = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        static public string DESKTOP = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public string[] DIRS = { USERDIR + @"\Downloads", USERDIR + @"\Desktop" };
         public string[] IGNORAR1FILES = { @"desktop.ini", "TRALHA"};
         public string[] IGNORAR2REGEX = { @"([0-9]{4})-week(5[0-3]|[1-4][0-9]|[1-9])" };

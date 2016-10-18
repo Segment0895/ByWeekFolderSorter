@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace Limpador
 {
-    public class Limpador
+    public class WeekSorter
     {
 
         private string alvo;
         private DirectoryInfo di = null;
 
-        public Limpador(string dir)
+        public WeekSorter(string dir)
         {
             try
             {
@@ -121,19 +121,18 @@ namespace Limpador
                 }
             end:
                 
-                DateTime lastTouchDate;
-                ObterUltimoAcessoOuMod(fi, out lastTouchDate);
-                var weeksInYear = WeeksInYear(lastTouchDate);
-
-                DirectoryInfo destino2 = di2.CreateSubdirectory(lastTouchDate.Year + "-week" + weeksInYear);
-                //Console.Out.WriteLine(fi.Name + "->" + destino2.Name);
-
-
                 if (aIgnorar) {
                     Console.WriteLine("IGNORADO (rule matched): " + fi.Name);
                 }
                 else
                 {
+
+                    DateTime lastTouchDate;
+                    ObterUltimoAcessoOuMod(fi, out lastTouchDate);
+                    var weeksInYear = WeeksInYear(lastTouchDate);
+                    DirectoryInfo destino2 = di2.CreateSubdirectory(lastTouchDate.Year + "-week" + weeksInYear);
+                    //Console.Out.WriteLine(fi.Name + "->" + destino2.Name);
+
 
                     if (fi is FileInfo)
                     {
